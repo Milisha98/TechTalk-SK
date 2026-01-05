@@ -14,7 +14,7 @@
    - Created CSV data files in `Data/` folder:
      - `customers.csv` - 10 automotive industry businesses
      - `invoices.csv` - 50 invoices with varied payment patterns
-     - `payments.csv` - 45 payments including Acme's anomalous large payments
+     - `payments.csv` - 39 payments with realistic ERP alignment
    - Created Models:
      - `Customer` (with string CustomerID)
      - `Invoice` (with nullable PaidDate)
@@ -25,54 +25,36 @@
      - `IPaymentRepository` / `PaymentRepository`
    - All repositories support LINQ querying via `IQueryable<T>`
 
+3. **DTOs (Data Transfer Objects)**
+   - Created `FilterSpec` - for NL→FilterSpec conversion
+   - Created `FilterResult` - contains raw data for LLM analysis
+     - Customer info and outstanding balance (basic aggregation)
+     - Lists of InvoiceInfo and PaymentInfo
+     - LLM will analyze this to find patterns, anomalies, trends
+
 ---
 
 ## Remaining Work
 
-### Phase 1: Data Transfer Objects (DTOs)
-**Purpose:** Define structured objects for communication between SK components
-
-1. **Create `Models/FilterSpec.cs`**
-   - Properties:
-     - `customerName` (string)
-     - `months` (int)
-     - `includeOutstanding` (bool)
-     - `includeTrends` (bool)
-     - `includeAnomalies` (bool)
-     - `scope` (string: "singleCustomer" or "multiCustomer")
-
-2. **Create `Models/FilterResult.cs`**
-   - Properties:
-     - Customer information
-     - Outstanding balance (decimal)
-     - List of invoices
-     - List of payments
-     - Payment timeliness metrics
-     - Anomaly descriptions (list of strings)
-     - Trend indicators (string or structured)
-
----
-
 ### Phase 2: ERP Data Plugin
-**Purpose:** SK plugin to process financial data using LINQ
+**Purpose:** SK plugin to fetch and prepare financial data using LINQ
 
 1. **Create `Plugins/ErpDataPlugin.cs`**
    - Constructor: inject repositories
    - Method: `LoadDataAsync()` - initialize all repositories
    - Method: `ApplyFilterAsync(FilterSpec spec)` - main processing logic
 
-2. **Implement LINQ-based calculations:**
-   - Outstanding balance calculation
-   - Payment timeliness analysis (days late/early)
-   - Payment frequency analysis
-   - Anomaly detection:
-     - Unusually large payments (e.g., 2+ standard deviations)
-     - Long payment gaps
-   - Trend calculation:
-     - Rolling outstanding balance over time
-     - Detect upward/downward trends
+2. **Implement basic LINQ operations:**
+   - Fetch customer by name
+   - Fetch invoices for specified time period (last N months)
+   - Fetch payments for specified time period
+   - Calculate outstanding balance (sum of unpaid invoices)
+   - Calculate DaysLate for each invoice (DueDate vs PaidDate)
+   - **No complex analysis** - let LLM do anomaly detection, trend analysis, risk assessment
 
-3. **Return structured `FilterResult`**
+3. **Return `FilterResult` with raw data**
+   - Customer info + basic aggregation (outstanding balance)
+   - Lists of invoices and payments for LLM to analyze
 
 ---
 
@@ -107,8 +89,13 @@
      - Include examples for few-shot learning
    
    - **ResultsToInsight prompt:**
-     - Input: structured FilterResult (JSON)
+     - Input: FilterResult with raw invoice/payment data (JSON)
      - Output: natural language business insights
+     - **LLM performs the analysis:**
+       - Analyzes payment timeliness patterns
+       - Identifies anomalies (unusual payment amounts, timing, gaps)
+       - Detects trends (increasing/decreasing balances, behavior changes)
+       - Assesses risk based on patterns
      - Must cover: outstanding balance, timeliness, anomalies, trends
 
 3. **Create Kernel builder**
@@ -208,8 +195,8 @@
    - Architecture overview
 
 2. **Add code comments:**
-   - Document complex LINQ queries
-   - Explain anomaly detection logic
+   - Document LINQ queries for data fetching
+   - Explain how LLM analyzes raw data to find patterns
    - Describe plugin methods
 
 ---

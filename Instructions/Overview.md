@@ -171,15 +171,16 @@ Output:
 
 ### **3.3.2 Semantic Function: Results → Insight**
 Input:
-- Structured result object (JSON or C# DTO)
+- FilterResult with raw invoice and payment data (JSON)
+- Customer information and outstanding balance (basic aggregation)
 
 Output:
-- Natural language summary including:
-  - Outstanding balance  
-  - Payment behaviour  
-  - Anomalies  
-  - Trends  
-  - Risks (if multi customer)  
+- Natural language summary where **LLM analyzes the raw data** to identify:
+  - Outstanding balance (provided)  
+  - Payment behaviour patterns (LLM analyzes timeliness)
+  - Anomalies (LLM detects unusual amounts, timing, gaps)  
+  - Trends (LLM identifies increasing/decreasing balances, behavior changes)  
+  - Risks (LLM assesses based on patterns)
 
 ---
 
@@ -188,13 +189,14 @@ Output:
 ### **Responsibilities**
 - Load CSV files into memory  
 - Apply LINQ filters based on FilterSpec  
-- Compute:
-  - Outstanding balances  
-  - Payment timeliness  
-  - Payment frequency  
-  - Anomalies  
-  - Trends  
-- Return a structured result object
+- Fetch customer by name
+- Fetch invoices for specified time period (last N months)
+- Fetch payments for specified time period
+- Compute basic aggregations:
+  - Outstanding balance (sum of unpaid invoices)
+  - DaysLate for each invoice (DueDate vs PaidDate)
+- **No complex analysis** - plugin only fetches and prepares data
+- Return raw data for LLM to analyze
 
 ### **Methods**
 ```csharp
@@ -202,15 +204,13 @@ Task LoadDataAsync();
 Task<FilterResult> ApplyFilterAsync(FilterSpec spec);
 ```
 
-`FilterResult` must include:
+`FilterResult` includes:
 
-- Customer info  
-- Outstanding balance  
-- List of relevant invoices  
-- List of relevant payments  
-- Payment timeliness metrics  
-- Anomaly list  
-- Trend indicators  
+- Customer info (ID, Name, Region)  
+- Outstanding balance (basic aggregation)  
+- List of InvoiceInfo (with calculated DaysLate)  
+- List of PaymentInfo  
+- **LLM analyzes this raw data** to find anomalies, trends, and risks
 
 ---
 
