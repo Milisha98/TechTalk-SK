@@ -36,7 +36,7 @@
    - OPENAI_MODEL set to gpt-4o
    - DotEnv.Net will load variables at runtime
 
-5. **Redesigned ErpDataPlugin for Automatic Function Calling**
+5. **Redesigned ErpDataPlugin for Automatic Function Calling (Phase 6)**
    - Deleted FilterSpec.cs and FilterResult.cs (overcomplicated DTOs)
    - Redesigned plugin with granular KernelFunctions:
      - `GetCustomerByName(string)` - lookup customer
@@ -47,54 +47,32 @@
    - Simple parameters, focused responsibility
    - LLM will autonomously call these based on user questions
 
+6. **Automatic Function Calling with ChatService (Phase 7)**
+   - Deleted `KernelService` and `OrchestrationService` (manual orchestration)
+   - Created `ChatService` with automatic function calling:
+     - Configures kernel with OpenAI chat completion
+     - Registers ErpDataPlugin
+     - Uses `ChatHistory` to maintain conversation
+     - Uses `FunctionChoiceBehavior.Auto()` for automatic function calling
+     - System prompt guides LLM to provide financial analysis
+   - Updated `Program.cs`:
+     - Initializes repositories with CSV file paths
+     - Loads data on startup
+     - Creates ChatService instance
+     - Simple console-based chat loop
+   - SK handles everything automatically:
+     - LLM decides which functions to call
+     - SK invokes functions
+     - LLM analyzes results
+     - Returns natural language answer
+
 ---
 
 ## Remaining Work
 
-### Phase 6: Redesign Kernel Setup for Auto Function Calling
-**Purpose:** Expose granular functions that LLM can call autonomously
-
-1. **Remove FilterSpec/FilterResult complexity**
-   - Delete `FilterSpec.cs` and `FilterResult.cs`
-   - Plugin returns basic models directly (`Customer`, `Invoice`, `Payment`)
-
-2. **Create granular KernelFunctions:**
-   - `GetCustomerByName(string customerName)` - lookup customer
-   - `GetInvoicesForCustomer(string customerName, int months)` - fetch invoices
-   - `GetPaymentsForCustomer(string customerName, int months)` - fetch payments
-   - `CalculateOutstandingBalance(string customerName)` - compute balance
-   - Each function has clear description for LLM
-   - Simple parameters, focused responsibility
-
-3. **Let LLM decide what to call**
-   - No predetermined flow
-   - LLM analyzes user question and calls needed functions
-
 ---
 
-### Phase 6: Redesign Kernel Setup for Auto Function Calling
-**Purpose:** Use SK's automatic function calling
-
-1. **Remove manual orchestration code:**
-   - Delete `KernelService` with inline prompts
-   - Delete `OrchestrationService`
-
-2. **Create simple chat-based service:**
-   - Configure kernel with OpenAI chat completion
-   - Register ErpDataPlugin
-   - Set system prompt ("You are a financial analyst...")
-   - Use `ChatHistory` to maintain conversation
-   - Call chat completion with `FunctionChoiceBehavior.Auto()`
-
-3. **SK handles everything automatically:**
-   - LLM decides which functions to call
-   - SK invokes functions
-   - LLM analyzes results
-   - Returns natural language answer
-
----
-
-### Phase 7: Gradio.NET Chat UI
+### Phase 8: Gradio.NET Chat UI
 **Purpose:** Web-based chat interface for demo
 
 1. **Update `Program.cs`**
@@ -120,7 +98,7 @@
 
 ---
 
-### Phase 8: Testing & Refinement
+### Phase 9: Testing & Refinement
 **Purpose:** Ensure demo stability for recording
 
 1. **Test core demo scenario:**
@@ -148,7 +126,7 @@
 
 ---
 
-### Phase 9: Documentation
+### Phase 10: Documentation
 **Purpose:** Enable others to run the demo
 
 1. **Create `README.md`**
