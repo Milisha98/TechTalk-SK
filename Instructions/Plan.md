@@ -55,30 +55,20 @@
    - Created ResultsToInsightFunction (raw data → business insights)
    - LLM analyzes payment patterns, anomalies, and trends
 
+7. **Orchestration**
+   - Created `OrchestrationService` with `ProcessUserMessageAsync`
+   - Chains all SK components together:
+     1. NL → FilterSpec (semantic function)
+     2. Parse JSON to FilterSpec
+     3. ErpDataPlugin.ApplyFilterAsync (fetch data)
+     4. Serialize FilterResult to JSON
+     5. Results → Insight (semantic function with LLM analysis)
+     6. Return natural language answer
+   - Error handling for JSON parsing, customer not found, and exceptions
+
 ---
 
 ## Remaining Work
-
-### Phase 5: Orchestration
-**Purpose:** Chain SK components together
-
-1. **Create `Services/OrchestrationService.cs`**
-   - Method: `ProcessUserMessageAsync(string userMessage)`
-   - Steps:
-     1. Call NL→FilterSpec semantic function
-     2. Parse JSON response into FilterSpec
-     3. Call `ErpDataPlugin.ApplyFilterAsync(spec)`
-     4. Serialize FilterResult to JSON
-     5. Call Results→Insight semantic function
-     6. Return final natural language answer
-
-2. **Add error handling:**
-   - Invalid JSON parsing
-   - Repository errors
-   - OpenAI API errors
-   - Return user-friendly error messages
-
----
 
 ### Phase 6: Gradio.NET Chat UI
 **Purpose:** Web-based chat interface for demo
