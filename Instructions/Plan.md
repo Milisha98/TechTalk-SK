@@ -52,23 +52,17 @@
 ## Remaining Work
 
 ### Phase 4: Semantic Kernel Setup
-**Purpose:** Configure SK with semantic functions
+**Purpose:** Configure SK with inline prompt functions
 
-1. **Create `Prompts/` folder structure**
-   - `Prompts/NLToFilter/` - natural language to FilterSpec
-     - `skprompt.txt` - prompt template
-     - `config.json` - function configuration
-   - `Prompts/ResultsToInsight/` - FilterResult to natural language
-     - `skprompt.txt` - prompt template
-     - `config.json` - function configuration
-
-2. **Write prompt templates:**
+1. **Create inline prompt functions** (using modern SK 1.x approach)
    - **NLToFilter prompt:**
-     - Input: user question + schema description
+     - Use `kernel.CreateFunctionFromPrompt()`
+     - Input: user question
      - Output: JSON FilterSpec
-     - Include examples for few-shot learning
+     - Include schema description and few-shot examples in prompt
    
    - **ResultsToInsight prompt:**
+     - Use `kernel.CreateFunctionFromPrompt()`
      - Input: FilterResult with raw invoice/payment data (JSON)
      - Output: natural language business insights
      - **LLM performs the analysis:**
@@ -78,10 +72,11 @@
        - Assesses risk based on patterns
      - Must cover: outstanding balance, timeliness, anomalies, trends
 
-3. **Create Kernel builder**
-   - Configure OpenAI chat completion
-   - Load semantic functions from prompts
+2. **Create Kernel builder**
+   - Load environment variables with DotEnv.Net
+   - Configure OpenAI chat completion service
    - Register ErpDataPlugin
+   - Create inline prompt functions
 
 ---
 
