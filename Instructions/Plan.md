@@ -47,38 +47,17 @@
    - OPENAI_MODEL set to gpt-4o
    - DotEnv.Net will load variables at runtime
 
+6. **Semantic Kernel Setup**
+   - Created `KernelService` with inline prompt functions
+   - Configured OpenAI chat completion
+   - Registered ErpDataPlugin
+   - Created NLToFilterFunction (user question → JSON FilterSpec)
+   - Created ResultsToInsightFunction (raw data → business insights)
+   - LLM analyzes payment patterns, anomalies, and trends
+
 ---
 
 ## Remaining Work
-
-### Phase 4: Semantic Kernel Setup
-**Purpose:** Configure SK with inline prompt functions
-
-1. **Create inline prompt functions** (using modern SK 1.x approach)
-   - **NLToFilter prompt:**
-     - Use `kernel.CreateFunctionFromPrompt()`
-     - Input: user question
-     - Output: JSON FilterSpec
-     - Include schema description and few-shot examples in prompt
-   
-   - **ResultsToInsight prompt:**
-     - Use `kernel.CreateFunctionFromPrompt()`
-     - Input: FilterResult with raw invoice/payment data (JSON)
-     - Output: natural language business insights
-     - **LLM performs the analysis:**
-       - Analyzes payment timeliness patterns
-       - Identifies anomalies (unusual payment amounts, timing, gaps)
-       - Detects trends (increasing/decreasing balances, behavior changes)
-       - Assesses risk based on patterns
-     - Must cover: outstanding balance, timeliness, anomalies, trends
-
-2. **Create Kernel builder**
-   - Load environment variables with DotEnv.Net
-   - Configure OpenAI chat completion service
-   - Register ErpDataPlugin
-   - Create inline prompt functions
-
----
 
 ### Phase 5: Orchestration
 **Purpose:** Chain SK components together
