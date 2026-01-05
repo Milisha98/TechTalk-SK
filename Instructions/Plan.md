@@ -26,51 +26,64 @@
    - All repositories support LINQ querying via `IQueryable<T>`
 
 3. **DTOs (Data Transfer Objects)**
-   - Created `FilterSpec` - for NL→FilterSpec conversion
-   - Created `FilterResult` - contains raw data for LLM analysis
-     - Customer info and outstanding balance (basic aggregation)
-     - Lists of InvoiceInfo and PaymentInfo
-     - LLM will analyze this to find patterns, anomalies, trends
+   - Created basic models: `Customer`, `Invoice`, `Payment`
+   - These are returned directly by plugin functions
+   - LLM receives structured data to analyze
 
-4. **ERP Data Plugin**
-   - Created `Plugins/ErpDataPlugin.cs` with KernelFunction attribute
-   - Fetches customer by name from repository
-   - Filters invoices and payments by time period (last N months)
-   - Calculates outstanding balance (basic aggregation)
-   - Calculates DaysLate for each invoice
-   - Returns raw data in FilterResult for LLM analysis
-   - Uses Task.FromResult for synchronous operations
-
-5. **Environment Configuration**
+4. **Environment Configuration**
    - Created `.env` file with OpenAI credentials (gitignored)
    - OPENAI_API_KEY configured
    - OPENAI_MODEL set to gpt-4o
    - DotEnv.Net will load variables at runtime
 
-6. **Semantic Kernel Setup**
-   - Created `KernelService` with inline prompt functions
-   - Configured OpenAI chat completion
-   - Registered ErpDataPlugin
-   - Created NLToFilterFunction (user question → JSON FilterSpec)
-   - Created ResultsToInsightFunction (raw data → business insights)
-   - LLM analyzes payment patterns, anomalies, and trends
-
-7. **Orchestration**
-   - Created `OrchestrationService` with `ProcessUserMessageAsync`
-   - Chains all SK components together:
-     1. NL → FilterSpec (semantic function)
-     2. Parse JSON to FilterSpec
-     3. ErpDataPlugin.ApplyFilterAsync (fetch data)
-     4. Serialize FilterResult to JSON
-     5. Results → Insight (semantic function with LLM analysis)
-     6. Return natural language answer
-   - Error handling for JSON parsing, customer not found, and exceptions
-
 ---
 
 ## Remaining Work
 
-### Phase 6: Gradio.NET Chat UI
+### Phase 5: Redesign ErpDataPlugin for Automatic Function Calling
+**Purpose:** Expose granular functions that LLM can call autonomously
+
+1. **Remove FilterSpec/FilterResult complexity**
+   - Delete `FilterSpec.cs` and `FilterResult.cs`
+   - Plugin returns basic models directly (`Customer`, `Invoice`, `Payment`)
+
+2. **Create granular KernelFunctions:**
+   - `GetCustomerByName(string customerName)` - lookup customer
+   - `GetInvoicesForCustomer(string customerName, int months)` - fetch invoices
+   - `GetPaymentsForCustomer(string customerName, int months)` - fetch payments
+   - `CalculateOutstandingBalance(string customerName)` - compute balance
+   - Each function has clear description for LLM
+   - Simple parameters, focused responsibility
+
+3. **Let LLM decide what to call**
+   - No predetermined flow
+   - LLM analyzes user question and calls needed functions
+
+---
+
+### Phase 6: Redesign Kernel Setup for Auto Function Calling
+**Purpose:** Use SK's automatic function calling
+
+1. **Remove manual orchestration code:**
+   - Delete `KernelService` with inline prompts
+   - Delete `OrchestrationService`
+
+2. **Create simple chat-based service:**
+   - Configure kernel with OpenAI chat completion
+   - Register ErpDataPlugin
+   - Set system prompt ("You are a financial analyst...")
+   - Use `ChatHistory` to maintain conversation
+   - Call chat completion with `FunctionChoiceBehavior.Auto()`
+
+3. **SK handles everything automatically:**
+   - LLM decides which functions to call
+   - SK invokes functions
+   - LLM analyzes results
+   - Returns natural language answer
+
+---
+
+### Phase 7: Gradio.NET Chat UI
 **Purpose:** Web-based chat interface for demo
 
 1. **Update `Program.cs`**
@@ -96,7 +109,7 @@
 
 ---
 
-### Phase 7: Testing & Refinement
+### Phase 8: Testing & Refinement
 **Purpose:** Ensure demo stability for recording
 
 1. **Test core demo scenario:**
@@ -124,7 +137,7 @@
 
 ---
 
-### Phase 8: Documentation
+### Phase 9: Documentation
 **Purpose:** Enable others to run the demo
 
 1. **Create `README.md`**
