@@ -36,11 +36,22 @@
    - OPENAI_MODEL set to gpt-4o
    - DotEnv.Net will load variables at runtime
 
+5. **Redesigned ErpDataPlugin for Automatic Function Calling**
+   - Deleted FilterSpec.cs and FilterResult.cs (overcomplicated DTOs)
+   - Redesigned plugin with granular KernelFunctions:
+     - `GetCustomerByName(string)` - lookup customer
+     - `GetInvoicesForCustomer(string, int)` - fetch invoices
+     - `GetPaymentsForCustomer(string, int)` - fetch payments
+     - `CalculateOutstandingBalance(string)` - compute balance
+   - Each function has clear description for LLM
+   - Simple parameters, focused responsibility
+   - LLM will autonomously call these based on user questions
+
 ---
 
 ## Remaining Work
 
-### Phase 5: Redesign ErpDataPlugin for Automatic Function Calling
+### Phase 6: Redesign Kernel Setup for Auto Function Calling
 **Purpose:** Expose granular functions that LLM can call autonomously
 
 1. **Remove FilterSpec/FilterResult complexity**
