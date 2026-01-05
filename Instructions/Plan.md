@@ -6,7 +6,6 @@
 1. **Project Setup**
    - NuGet packages installed:
      - Microsoft.SemanticKernel 1.68.0
-     - Gradio.Net 0.5.0
      - DotEnv.Net 4.0.0
    - .gitignore configured (including .env files)
 
@@ -73,36 +72,11 @@
      - `RunChatLoopAsync()` - handles user interaction loop
    - Displays example questions on startup
    - Simple, functional interface for demo purposes
+   - Console is the baseline that everyone understands
 
 ---
 
 ## Remaining Work
-
----
-
-### Phase 8: Gradio.NET Chat UI (Optional - Deferred)
-**Purpose:** Web-based chat interface for demo
-
-1. **Update `Program.cs`**
-   - Load environment variables
-   - Initialize repositories and load data
-   - Create Kernel with SK configuration
-   - Create OrchestrationService instance
-
-2. **Build Gradio interface:**
-   - Create `gr.Blocks()` layout
-   - Add `gr.Chatbot()` component
-   - Add `gr.Textbox()` for user input
-   - Wire Submit event to `ProcessUserMessageAsync`
-   - Display responses in chat history
-
-3. **Optional enhancements:**
-   - Show intermediate FilterSpec (collapsible)
-   - Show raw metrics (collapsible)
-   - Add example questions as buttons
-
-4. **Launch the app:**
-   - `App.Launch()` with appropriate configuration
 
 ---
 
