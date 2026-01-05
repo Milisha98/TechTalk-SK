@@ -32,31 +32,18 @@
      - Lists of InvoiceInfo and PaymentInfo
      - LLM will analyze this to find patterns, anomalies, trends
 
+4. **ERP Data Plugin**
+   - Created `Plugins/ErpDataPlugin.cs` with KernelFunction attribute
+   - Fetches customer by name from repository
+   - Filters invoices and payments by time period (last N months)
+   - Calculates outstanding balance (basic aggregation)
+   - Calculates DaysLate for each invoice
+   - Returns raw data in FilterResult for LLM analysis
+   - Uses Task.FromResult for synchronous operations
+
 ---
 
 ## Remaining Work
-
-### Phase 2: ERP Data Plugin
-**Purpose:** SK plugin to fetch and prepare financial data using LINQ
-
-1. **Create `Plugins/ErpDataPlugin.cs`**
-   - Constructor: inject repositories
-   - Method: `LoadDataAsync()` - initialize all repositories
-   - Method: `ApplyFilterAsync(FilterSpec spec)` - main processing logic
-
-2. **Implement basic LINQ operations:**
-   - Fetch customer by name
-   - Fetch invoices for specified time period (last N months)
-   - Fetch payments for specified time period
-   - Calculate outstanding balance (sum of unpaid invoices)
-   - Calculate DaysLate for each invoice (DueDate vs PaidDate)
-   - **No complex analysis** - let LLM do anomaly detection, trend analysis, risk assessment
-
-3. **Return `FilterResult` with raw data**
-   - Customer info + basic aggregation (outstanding balance)
-   - Lists of invoices and payments for LLM to analyze
-
----
 
 ### Phase 3: Environment Configuration
 **Purpose:** Securely manage OpenAI API credentials
