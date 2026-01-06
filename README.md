@@ -190,12 +190,9 @@ SK/
 │   ├── Invoice.cs
 │   └── Payment.cs
 ├── Repositories/            # Data access layer (Repository Pattern)
-│   ├── ICustomerRepository.cs
-│   ├── CustomerRepository.cs
-│   ├── IInvoiceRepository.cs
-│   ├── InvoiceRepository.cs
-│   ├── IPaymentRepository.cs
-│   └── PaymentRepository.cs
+│   ├── CustomerRepository.cs    # Contains ICustomerRepository + implementation
+│   ├── InvoiceRepository.cs     # Contains IInvoiceRepository + implementation
+│   └── PaymentRepository.cs     # Contains IPaymentRepository + implementation
 ├── Plugins/                 # Semantic Kernel plugins
 │   └── ErpDataPlugin.cs
 ├── Services/                # Application services
