@@ -74,37 +74,28 @@
    - Simple, functional interface for demo purposes
    - Console is the baseline that everyone understands
 
+8. **Testing & Refinement (Phase 9)**
+   - Tested all core scenarios successfully:
+     - ✅ Acme Automotive query (all 4 categories: balance, timeliness, anomalies, trends)
+     - ✅ Blue Horizon query (comprehensive single-customer analysis)
+     - ✅ Multi-customer comparison and ranking
+     - ✅ Risk identification across customers
+     - ✅ Error handling with invalid customer names
+   - Enhanced ErpDataPlugin with two new functions:
+     - `GetAllCustomerNames()` - enables customer discovery
+     - `GetAllOutstandingBalances()` - enables comparative analysis
+   - System prompt assessed and found effective (no changes needed)
+   - All success criteria met:
+     - Demo runs locally with only OpenAI dependency
+     - Accurate insights with specific data
+     - Clean, readable code
+     - Stable, ready for recording
+     - Clear demonstration of SK's automatic function calling
+   - Detailed test results documented in `Instructions/TestResults.md`
+
 ---
 
 ## Remaining Work
-
----
-
-### Phase 9: Testing & Refinement
-**Purpose:** Ensure demo stability for recording
-
-1. **Test core demo scenario:**
-   - "Does Acme Automotive have any outstanding balances? If so, summarise their last 6 months of payment behaviour and highlight anything unusual."
-   - Verify all four categories present:
-     - Outstanding balance
-     - Payment timeliness
-     - Anomalies
-     - Trends
-
-2. **Test additional questions:**
-   - Blue Horizon Logistics query
-   - Multi-customer comparison
-   - Risk identification
-
-3. **Refine prompts if needed:**
-   - Improve JSON parsing reliability
-   - Enhance insight quality
-   - Ensure consistent output format
-
-4. **Error handling:**
-   - Test with invalid customer names
-   - Test with ambiguous queries
-   - Ensure graceful degradation
 
 ---
 

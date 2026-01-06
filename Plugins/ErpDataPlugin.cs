@@ -82,4 +82,28 @@ public class ErpDataPlugin
             .FetchUnpaidByCustomerId(customer.CustomerID)
             .Sum(i => i.Amount);
     }
+
+    [KernelFunction]
+    [Description("Gets a list of all customer names in the system.")]
+    public List<string> GetAllCustomerNames() =>
+        _customerRepository.FetchAll().Select(c => c.Name).ToList();
+
+    [KernelFunction]
+    [Description("Gets outstanding balances for all customers. Returns a dictionary with customer names as keys and their outstanding balances as values.")]
+    public Dictionary<string, decimal> GetAllOutstandingBalances()
+    {
+        var result = new Dictionary<string, decimal>();
+        var customers = _customerRepository.FetchAll();
+        
+        foreach (var customer in customers)
+        {
+            var balance = _invoiceRepository
+                .FetchUnpaidByCustomerId(customer.CustomerID)
+                .Sum(i => i.Amount);
+            
+            result[customer.Name] = balance;
+        }
+        
+        return result;
+    }
 }
