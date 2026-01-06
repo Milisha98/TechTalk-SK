@@ -27,17 +27,6 @@ public class ErpDataPlugin
     }
 
     /// <summary>
-    /// Loads all CSV data files into memory at application startup.
-    /// This is called once before the chat loop begins.
-    /// </summary>
-    public async Task LoadDataAsync()
-    {
-        await _customerRepository.LoadDataAsync();
-        await _invoiceRepository.LoadDataAsync();
-        await _paymentRepository.LoadDataAsync();
-    }
-
-    /// <summary>
     /// KernelFunction that looks up a customer by business name.
     /// The Description attribute tells the LLM when to call this function.
     /// </summary>

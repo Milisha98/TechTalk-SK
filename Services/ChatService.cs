@@ -21,18 +21,15 @@ public class ChatService
     /// Initializes the ChatService with Semantic Kernel configuration.
     /// Sets up automatic function calling and the system prompt.
     /// </summary>
-    public ChatService(
-        ICustomerRepository customerRepository,
-        IInvoiceRepository invoiceRepository,
-        IPaymentRepository paymentRepository)
+    public ChatService(ICustomerRepository customerRepository,
+                       IInvoiceRepository  invoiceRepository,
+                       IPaymentRepository  paymentRepository)
     {
         // Load OpenAI credentials from .env file
         DotEnv.Load();
         
-        var apiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY") 
-            ?? throw new InvalidOperationException("OPENAI_API_KEY not found in environment variables");
-        var model = Environment.GetEnvironmentVariable("OPENAI_MODEL") 
-            ?? throw new InvalidOperationException("OPENAI_MODEL not found in environment variables");
+        var apiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY") ?? throw new InvalidOperationException("OPENAI_API_KEY not found in environment variables");
+        var model = Environment.GetEnvironmentVariable("OPENAI_MODEL") ?? throw new InvalidOperationException("OPENAI_MODEL not found in environment variables");
 
         // Configure Semantic Kernel with OpenAI chat completion
         var builder = Kernel.CreateBuilder();
