@@ -15,8 +15,8 @@ static async Task<ChatService> InitializeApplicationAsync()
 {
     // Create repositories with paths to CSV files
     var customerRepository = new CustomerRepository("Data/customers.csv");
-    var invoiceRepository = new InvoiceRepository("Data/invoices.csv");
-    var paymentRepository = new PaymentRepository("Data/payments.csv");
+    var invoiceRepository  = new InvoiceRepository("Data/invoices.csv");
+    var paymentRepository  = new PaymentRepository("Data/payments.csv");
 
     // Load all CSV data into memory
     await customerRepository.LoadDataAsync();
