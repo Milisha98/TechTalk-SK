@@ -13,17 +13,27 @@ namespace SK.Plugins;
 public class ErpDataPlugin
 {
     private readonly ICustomerRepository _customerRepository;
-    private readonly IInvoiceRepository _invoiceRepository;
-    private readonly IPaymentRepository _paymentRepository;
+    private readonly IInvoiceRepository  _invoiceRepository;
+    private readonly IPaymentRepository  _paymentRepository;
 
-    public ErpDataPlugin(
-        ICustomerRepository customerRepository,
-        IInvoiceRepository invoiceRepository,
-        IPaymentRepository paymentRepository)
+    public ErpDataPlugin(ICustomerRepository customerRepository,
+                         IInvoiceRepository  invoiceRepository,
+                         IPaymentRepository  paymentRepository)
     {
         _customerRepository = customerRepository;
-        _invoiceRepository = invoiceRepository;
-        _paymentRepository = paymentRepository;
+        _invoiceRepository  = invoiceRepository;
+        _paymentRepository  = paymentRepository;
+    }
+
+    /// <summary>
+    /// Loads all CSV data files into memory at application startup.
+    /// This is called once before the chat loop begins.
+    /// </summary>
+    public async Task LoadDataAsync()
+    {
+        await _customerRepository.LoadDataAsync();
+        await _invoiceRepository.LoadDataAsync();
+        await _paymentRepository.LoadDataAsync();
     }
 
     /// <summary>
