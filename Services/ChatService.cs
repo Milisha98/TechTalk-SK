@@ -7,18 +7,26 @@ using SK.Repositories;
 
 namespace SK.Services;
 
+/// <summary>
+/// Service that handles chat interactions using Semantic Kernel's automatic function calling.
+/// This is where the "magic" happens - SK automatically orchestrates function calls based on user questions.
+/// </summary>
 public class ChatService
 {
     private readonly Kernel _kernel;
     private readonly IChatCompletionService _chatService;
     private readonly ChatHistory _chatHistory;
 
+    /// <summary>
+    /// Initializes the ChatService with Semantic Kernel configuration.
+    /// Sets up automatic function calling and the system prompt.
+    /// </summary>
     public ChatService(
         ICustomerRepository customerRepository,
         IInvoiceRepository invoiceRepository,
         IPaymentRepository paymentRepository)
     {
-        // Load environment variables
+        // Load OpenAI credentials from .env file
         DotEnv.Load();
         
         var apiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY") 
@@ -26,21 +34,26 @@ public class ChatService
         var model = Environment.GetEnvironmentVariable("OPENAI_MODEL") 
             ?? throw new InvalidOperationException("OPENAI_MODEL not found in environment variables");
 
-        // Build kernel with OpenAI chat completion
+        // Configure Semantic Kernel with OpenAI chat completion
         var builder = Kernel.CreateBuilder();
         builder.AddOpenAIChatCompletion(
             modelId: model,
             apiKey: apiKey
         );
 
-        // Register ERP Data Plugin
+        // Register the ERP Data Plugin - makes all KernelFunctions available to the LLM
         var erpPlugin = new ErpDataPlugin(customerRepository, invoiceRepository, paymentRepository);
         builder.Plugins.AddFromObject(erpPlugin, "ErpData");
 
         _kernel = builder.Build();
         _chatService = _kernel.GetRequiredService<IChatCompletionService>();
 
-        // Initialize chat history with system prompt
+        // System prompt guides the LLM on its role and analysis structure
+        // This prompt tells the LLM:
+        // 1. What role to play (financial analyst)
+        // 2. What functions are available
+        // 3. What structure to follow in responses (balance, timeliness, anomalies, trends)
+        // 4. To be specific with data (numbers, dates, amounts)
         _chatHistory = new ChatHistory("""
             You are a financial analyst AI assistant that helps users analyze customer payment data.
             
@@ -60,27 +73,45 @@ public class ChatService
             """);
     }
 
+    /// <summary>
+    /// Processes a user message using Semantic Kernel's automatic function calling.
+    /// 
+    /// How it works:
+    /// 1. User message is added to chat history
+    /// 2. FunctionChoiceBehavior.Auto() tells SK to automatically call functions
+    /// 3. LLM analyzes the question and decides which plugin functions to call
+    /// 4. SK invokes the functions with appropriate parameters
+    /// 5. LLM receives the returned data and analyzes it
+    /// 6. LLM generates a natural language response with insights
+    /// 
+    /// No manual orchestration needed - this is SK's core capability!
+    /// </summary>
     public async Task<string> ProcessUserMessageAsync(string userMessage)
     {
         try
         {
-            // Add user message to chat history
+            // Add user message to conversation history
             _chatHistory.AddUserMessage(userMessage);
 
-            // Configure automatic function calling
+            // FunctionChoiceBehavior.Auto() is the key to automatic function calling
+            // The LLM will autonomously decide which functions to call
             var executionSettings = new OpenAIPromptExecutionSettings
             {
                 FunctionChoiceBehavior = FunctionChoiceBehavior.Auto()
             };
 
-            // Get chat completion - SK will automatically call functions as needed
+            // SK orchestrates everything automatically:
+            // - LLM analyzes user question
+            // - LLM calls plugin functions as needed (can be multiple calls)
+            // - LLM receives structured data from functions
+            // - LLM generates natural language insights
             var response = await _chatService.GetChatMessageContentAsync(
                 _chatHistory,
                 executionSettings,
                 _kernel
             );
 
-            // Add assistant response to chat history
+            // Add response to history for conversation continuity
             _chatHistory.AddAssistantMessage(response.Content ?? string.Empty);
 
             return response.Content ?? "I couldn't generate a response.";
@@ -91,5 +122,8 @@ public class ChatService
         }
     }
 
+    /// <summary>
+    /// Clears the conversation history. Useful for starting a fresh conversation.
+    /// </summary>
     public void ClearHistory() => _chatHistory.Clear();
 }
