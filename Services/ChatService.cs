@@ -29,7 +29,7 @@ public class ChatService
         DotEnv.Load();
         
         var apiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY") ?? throw new InvalidOperationException("OPENAI_API_KEY not found in environment variables");
-        var model = Environment.GetEnvironmentVariable("OPENAI_MODEL") ?? throw new InvalidOperationException("OPENAI_MODEL not found in environment variables");
+        var model  = Environment.GetEnvironmentVariable("OPENAI_MODEL")   ?? throw new InvalidOperationException("OPENAI_MODEL not found in environment variables");
 
         // Configure Semantic Kernel with OpenAI chat completion
         var builder = Kernel.CreateBuilder();
@@ -119,8 +119,4 @@ public class ChatService
         }
     }
 
-    /// <summary>
-    /// Clears the conversation history. Useful for starting a fresh conversation.
-    /// </summary>
-    public void ClearHistory() => _chatHistory.Clear();
 }
