@@ -95,14 +95,66 @@ All core functionality tested and verified. One improvement made to enable multi
 
 ---
 
+## Test 7: CustomerID Lookup - Financial Health Query ✅ PASSED
+
+**Query:** "What is the financial health of CustomerID 534926?"
+
+**Results:**
+- ✅ Successfully looked up CustomerID 534926 (Emerald Brake & Clutch)
+- ✅ Current outstanding balance: $18,500
+- ✅ Comprehensive payment timeliness analysis with invoice-by-invoice breakdown
+- ✅ Payment patterns and anomalies identified
+- ✅ Actionable business insights provided
+
+**Assessment:** Excellent - CustomerID lookup works correctly with full financial analysis.
+
+---
+
+## Test 8: MemberID Alias Recognition ✅ PASSED
+
+**Query:** "Show me the outstanding balance for MemberID 102847"
+
+**Results:**
+- ✅ Recognized MemberID as an alias for CustomerID
+- ✅ Successfully looked up MemberID 102847
+- ✅ Returned outstanding balance: $42,300
+- ✅ Proper alias handling demonstrated
+
+**Assessment:** Excellent - MemberID alias works as expected.
+
+---
+
+## Test 9: Numeric ID Without Label ✅ PASSED
+
+**Query:** "Tell me about customer 205391"
+
+**Results:**
+- ✅ Identified customer from bare numeric ID (205391)
+- ✅ Resolved to "Blue Horizon Auto Electrics"
+- ✅ Returned customer details (ABN: 23456789012, Region: NSW)
+- ✅ Works without requiring explicit "CustomerID" label
+
+**Assessment:** Excellent - Natural language handling of numeric IDs.
+
+---
+
 ## Improvements Made
 
-### 1. Enhanced ErpDataPlugin
+### 1. Enhanced ErpDataPlugin - Multi-Customer Support
 **Added Functions:**
 - `GetAllCustomerNames()` - Enables LLM to discover all customers
 - `GetAllOutstandingBalances()` - Enables comparative balance analysis
 
 **Impact:** Enables multi-customer comparisons and rankings without requiring specific customer names.
+
+### 2. Enhanced ErpDataPlugin - CustomerID Lookup Support
+**Added Functions:**
+- `GetCustomerById()` - Lookup customer by CustomerID/MemberID
+- `GetInvoicesForCustomerById()` - Get invoices using CustomerID
+- `GetPaymentsForCustomerById()` - Get payments using CustomerID
+- `CalculateOutstandingBalanceById()` - Calculate balance using CustomerID
+
+**Impact:** Enables queries using CustomerID or MemberID instead of customer names. Supports natural language variations like "CustomerID 534926", "MemberID 102847", or "customer 205391".
 
 ---
 
