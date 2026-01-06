@@ -26,17 +26,6 @@ public class ErpDataPlugin
     }
 
     /// <summary>
-    /// Loads all CSV data files into memory at application startup.
-    /// This is called once before the chat loop begins.
-    /// </summary>
-    public async Task LoadDataAsync()
-    {
-        await _customerRepository.LoadDataAsync();
-        await _invoiceRepository.LoadDataAsync();
-        await _paymentRepository.LoadDataAsync();
-    }
-
-    /// <summary>
     /// KernelFunction that looks up a customer by business name.
     /// The Description attribute tells the LLM when to call this function.
     /// </summary>
@@ -45,6 +34,16 @@ public class ErpDataPlugin
     public Customer? GetCustomerByName(
         [Description("The name of the customer business to look up")] string customerName) =>
         _customerRepository.FetchByName(customerName);
+
+    /// <summary>
+    /// KernelFunction that looks up a customer by their CustomerID (also known as MemberID).
+    /// Useful when the user references a customer by their ID number.
+    /// </summary>
+    [KernelFunction]
+    [Description("Looks up a customer by their CustomerID or MemberID. Returns customer details if found, null otherwise.")]
+    public Customer? GetCustomerById(
+        [Description("The CustomerID or MemberID to look up")] string customerId) =>
+        _customerRepository.FetchById(customerId);
 
     /// <summary>
     /// KernelFunction that retrieves invoices for a specific customer.
@@ -95,6 +94,42 @@ public class ErpDataPlugin
     }
 
     /// <summary>
+    /// KernelFunction that retrieves invoices using CustomerID.
+    /// </summary>
+    [KernelFunction]
+    [Description("Gets all invoices for a customer using their CustomerID or MemberID within a specified time period.")]
+    public List<Invoice> GetInvoicesForCustomerById(
+        [Description("The CustomerID or MemberID")] string customerId,
+        [Description("Number of months to look back (e.g., 6 for last 6 months)")] int months = 6)
+    {
+        var cutoffDate = DateTime.Now.AddMonths(-months);
+        
+        return _invoiceRepository
+            .FetchByCustomerId(customerId)
+            .Where(i => i.DueDate >= cutoffDate)
+            .OrderBy(i => i.DueDate)
+            .ToList();
+    }
+
+    /// <summary>
+    /// KernelFunction that retrieves payment history using CustomerID.
+    /// </summary>
+    [KernelFunction]
+    [Description("Gets all payments made by a customer using their CustomerID or MemberID within a specified time period.")]
+    public List<Payment> GetPaymentsForCustomerById(
+        [Description("The CustomerID or MemberID")] string customerId,
+        [Description("Number of months to look back (e.g., 6 for last 6 months)")] int months = 6)
+    {
+        var cutoffDate = DateTime.Now.AddMonths(-months);
+        
+        return _paymentRepository
+            .FetchByCustomerId(customerId)
+            .Where(p => p.Date >= cutoffDate)
+            .OrderBy(p => p.Date)
+            .ToList();
+    }
+
+    /// <summary>
     /// KernelFunction that calculates total outstanding balance for a customer.
     /// Aggregates all unpaid invoices using LINQ Sum.
     /// </summary>
@@ -109,6 +144,20 @@ public class ErpDataPlugin
         // LINQ aggregation: sum amounts of all unpaid invoices
         return _invoiceRepository
             .FetchUnpaidByCustomerId(customer.CustomerID)
+            .Sum(i => i.Amount);
+    }
+
+    /// <summary>
+    /// KernelFunction that calculates total outstanding balance using CustomerID.
+    /// </summary>
+    [KernelFunction]
+    [Description("Calculates the current outstanding balance for a customer using their CustomerID or MemberID (sum of all unpaid invoices).")]
+    public decimal CalculateOutstandingBalanceById(
+        [Description("The CustomerID or MemberID")] string customerId)
+    {
+        // LINQ aggregation: sum amounts of all unpaid invoices
+        return _invoiceRepository
+            .FetchUnpaidByCustomerId(customerId)
             .Sum(i => i.Amount);
     }
 
