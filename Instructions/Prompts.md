@@ -7,10 +7,10 @@ Does Acme Automotive have any outstanding balances? If so, summarise their last 
 Show me the current outstanding balance and recent payment behaviour for Blue Horizon Auto Electrics.
 
 ## Multi-Customer Comparison
-Which customers have the highest outstanding balances?
+Which members have the highest outstanding balances?
 
 ## Risk Identification
-Does any customer stand out as particularly risky based on late payments and growing balances?
+Does any member stand out as particularly risky based on late payments and growing balances?
 
 ## Error Handling Test
 What about XYZ Motors?
@@ -26,11 +26,11 @@ What about XYZ Motors?
 
 ### Comparative Analysis
 - Compare the payment behaviour of Acme Automotive and Blue Horizon Auto Electrics
-- Which customer has the best payment record?
-- Are there any customers with improving payment trends?
+- Which member has the best payment record?
+- Are there any mustomers with improving payment trends?
 
 ### Business Intelligence
-- Which customers should I be concerned about?
+- Which members should I be concerned about?
 - Who are my most reliable customers?
 - Are there any red flags I should be aware of?
 
