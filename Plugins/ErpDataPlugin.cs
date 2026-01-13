@@ -26,11 +26,11 @@ public class ErpDataPlugin
     }
 
     /// <summary>
-    /// KernelFunction that looks up a customer by business name.
+    /// KernelFunction that looks up a member by business name.
     /// The Description attribute tells the LLM when to call this function.
     /// </summary>
     [KernelFunction]
-    [Description("Looks up a customer by their business name. Returns customer details if found, null otherwise.")]
+    [Description("Looks up a member (Customer) by their business name. Returns member details if found, null otherwise.")]
     public Customer? GetCustomerByName(
         [Description("The name of the customer business to look up")] string customerName) =>
         _customerRepository.FetchByName(customerName);
@@ -40,7 +40,7 @@ public class ErpDataPlugin
     /// Useful when the user references a customer by their ID number.
     /// </summary>
     [KernelFunction]
-    [Description("Looks up a customer by their CustomerID or MemberID. Returns customer details if found, null otherwise.")]
+    [Description("Looks up a member by their CustomerID or MemberID. Returns member details if found, null otherwise.")]
     public Customer? GetCustomerById(
         [Description("The CustomerID or MemberID to look up")] string customerId) =>
         _customerRepository.FetchById(customerId);
@@ -51,9 +51,9 @@ public class ErpDataPlugin
     /// Returns structured Invoice objects that the LLM can analyze.
     /// </summary>
     [KernelFunction]
-    [Description("Gets all invoices for a customer within a specified time period. Includes invoice amounts, due dates, and payment dates.")]
+    [Description("Gets all invoices for a member (customer) within a specified time period. Includes invoice amounts, due dates, and payment dates.")]
     public List<Invoice> GetInvoicesForCustomer(
-        [Description("The name of the customer")] string customerName,
+        [Description("The name of the member")] string customerName,
         [Description("Number of months to look back (e.g., 6 for last 6 months)")] int months = 6)
     {
         var customer = _customerRepository.FetchByName(customerName);
@@ -71,13 +71,13 @@ public class ErpDataPlugin
     }
 
     /// <summary>
-    /// KernelFunction that retrieves payment history for a specific customer.
+    /// KernelFunction that retrieves payment history for a specific member.
     /// The LLM uses this to analyze payment patterns and timeliness.
     /// </summary>
     [KernelFunction]
-    [Description("Gets all payments made by a customer within a specified time period. Includes payment amounts and dates.")]
+    [Description("Gets all payments made by a member (customer) within a specified time period. Includes payment amounts and dates.")]
     public List<Payment> GetPaymentsForCustomer(
-        [Description("The name of the customer")] string customerName,
+        [Description("The name of the member")] string customerName,
         [Description("Number of months to look back (e.g., 6 for last 6 months)")] int months = 6)
     {
         var customer = _customerRepository.FetchByName(customerName);
@@ -94,10 +94,10 @@ public class ErpDataPlugin
     }
 
     /// <summary>
-    /// KernelFunction that retrieves invoices using CustomerID.
+    /// KernelFunction that retrieves invoices using MemberID.
     /// </summary>
     [KernelFunction]
-    [Description("Gets all invoices for a customer using their CustomerID or MemberID within a specified time period.")]
+    [Description("Gets all invoices for a member using their MemberID or MemberID within a specified time period.")]
     public List<Invoice> GetInvoicesForCustomerById(
         [Description("The CustomerID or MemberID")] string customerId,
         [Description("Number of months to look back (e.g., 6 for last 6 months)")] int months = 6)
@@ -112,10 +112,10 @@ public class ErpDataPlugin
     }
 
     /// <summary>
-    /// KernelFunction that retrieves payment history using CustomerID.
+    /// KernelFunction that retrieves payment history using MemberID.
     /// </summary>
     [KernelFunction]
-    [Description("Gets all payments made by a customer using their CustomerID or MemberID within a specified time period.")]
+    [Description("Gets all payments made by a member (customer) using their MemberID or MemberID within a specified time period.")]
     public List<Payment> GetPaymentsForCustomerById(
         [Description("The CustomerID or MemberID")] string customerId,
         [Description("Number of months to look back (e.g., 6 for last 6 months)")] int months = 6)
@@ -130,13 +130,13 @@ public class ErpDataPlugin
     }
 
     /// <summary>
-    /// KernelFunction that calculates total outstanding balance for a customer.
+    /// KernelFunction that calculates total outstanding balance for a member.
     /// Aggregates all unpaid invoices using LINQ Sum.
     /// </summary>
     [KernelFunction]
-    [Description("Calculates the current outstanding balance for a customer (sum of all unpaid invoices).")]
+    [Description("Calculates the current outstanding balance for a member (customer). Sum of all unpaid invoices.")]
     public decimal CalculateOutstandingBalance(
-        [Description("The name of the customer")] string customerName)
+        [Description("The name of the member or customer")] string customerName)
     {
         var customer = _customerRepository.FetchByName(customerName);
         if (customer is null) return 0m;
@@ -151,7 +151,7 @@ public class ErpDataPlugin
     /// KernelFunction that calculates total outstanding balance using CustomerID.
     /// </summary>
     [KernelFunction]
-    [Description("Calculates the current outstanding balance for a customer using their CustomerID or MemberID (sum of all unpaid invoices).")]
+    [Description("Calculates the current outstanding balance for a member (customer) using their CustomerID or MemberID (sum of all unpaid invoices).")]
     public decimal CalculateOutstandingBalanceById(
         [Description("The CustomerID or MemberID")] string customerId)
     {
@@ -166,7 +166,7 @@ public class ErpDataPlugin
     /// Enables the LLM to discover available customers for comparative analysis.
     /// </summary>
     [KernelFunction]
-    [Description("Gets a list of all customer names in the system.")]
+    [Description("Gets a list of all members (customers) names in the system.")]
     public List<string> GetAllCustomerNames() =>
         _customerRepository.FetchAll().Select(c => c.Name).ToList();
 
@@ -176,7 +176,7 @@ public class ErpDataPlugin
     /// The LLM can use this to identify customers with highest balances or compare risk levels.
     /// </summary>
     [KernelFunction]
-    [Description("Gets outstanding balances for all customers. Returns a dictionary with customer names as keys and their outstanding balances as values.")]
+    [Description("Gets outstanding balances for all members (customers). Returns a dictionary with member names as keys and their outstanding balances as values.")]
     public Dictionary<string, decimal> GetAllOutstandingBalances()
     {
         var result = new Dictionary<string, decimal>();
